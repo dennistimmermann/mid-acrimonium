@@ -59,55 +59,60 @@ void Lighting::fillNoise() {
 
 void Lighting::run() {
 
-    // /**
-    //  * ! FLASK BLINKENLIGHTS
-    //  */
-    // fillNoise();
-    // // int _lvl = (LEDS_X * LEDS_Y) * (*level/100.0);
-    // float brightness = ((*movement+10)/100.0);
-    // for(int i = 0; i < LEDS_X; i++) {
-    //     for(int j = 0; j < LEDS_Y; j++) {
-    //
-    //         int c = j*12+i;
-    //         strip.setPixelColor(c, strip.Color(
-    //             0,
-    //             (int) ( (20+gamma[noise[i][j]]) * brightness),
-    //             0,
-    //             (int) (gamma[noise[i][j]] * brightness)
-    //         ));
-    //         // You can also explore other ways to constrain the hue used, like below
-    //         // leds[XY(i,j)] = CHSV(ihue + (noise[j][i]>>2),255,noise[i][j]);
-    //         strip.show();
-    //     }
-    // }
-    // /**
-    //  * / FLASK BLINKENLIGHTS
-    //  */
+    #if DEVICE == FLASK
+        // /**
+        //  * ! FLASK BLINKENLIGHTS
+        //  */
+        fillNoise();
+        int _lvl = (LEDS_X * LEDS_Y) * (*level/100.0);
+        float brightness = ((*movement+10)/100.0);
+        brightness = brightness * (*level/100.0);
+        for(int i = 0; i < LEDS_X; i++) {
+            for(int j = 0; j < LEDS_Y; j++) {
 
-     /**
-      * ! CHALICE BLINKENLIGHTS
-      */
-     fillNoise();
-     int _lvl = (LEDS_X * LEDS_Y) * (*level/100.0);
-     for(int i = 0; i < LEDS_X; i++) {
-         for(int j = 0; j < LEDS_Y; j++) {
+                int c = j*12+i;
+                float brightness2 = constrain((_lvl - c) / 12.0, 0.0, 1.0);
 
-             int c = j*12+i;
-             float brightness = constrain((_lvl - c) / 12.0, 0.0, 1.0);
-             strip.setPixelColor(c, strip.Color(
-                 0,
-                 (int) ( (20+gamma[noise[i][j]]) * brightness),
-                 0,
-                 (int) (gamma[noise[i][j]] * brightness)
-             ));
-             // You can also explore other ways to constrain the hue used, like below
-             // leds[XY(i,j)] = CHSV(ihue + (noise[j][i]>>2),255,noise[i][j]);
-             strip.show();
-         }
-     }
-     /**
-      * / CHALICE BLINKENLIGHTS
-      */
+                strip.setPixelColor(c, strip.Color(
+                    0,
+                    (int) ( (20+gamma[noise[i][j]]) * brightness),
+                    0,
+                    (int) (gamma[noise[i][j]] * brightness)
+                ));
+                // You can also explore other ways to constrain the hue used, like below
+                // leds[XY(i,j)] = CHSV(ihue + (noise[j][i]>>2),255,noise[i][j]);
+                strip.show();
+            }
+        }
+        // /**
+        //  * / FLASK BLINKENLIGHTS
+        //  */
+    #elif DEVICE == CHALICE
+        /**
+        * ! CHALICE BLINKENLIGHTS
+        */
+        fillNoise();
+        int _lvl = (LEDS_X * LEDS_Y) * (*level/100.0);
+        for(int i = 0; i < LEDS_X; i++) {
+            for(int j = 0; j < LEDS_Y; j++) {
+
+                int c = j*12+i;
+                float brightness = constrain((_lvl - c) / 12.0, 0.0, 1.0);
+                strip.setPixelColor(c, strip.Color(
+                    0,
+                    (int) ( (20+gamma[noise[i][j]]) * brightness),
+                    0,
+                    (int) (gamma[noise[i][j]] * brightness)
+                ));
+                // You can also explore other ways to constrain the hue used, like below
+                // leds[XY(i,j)] = CHSV(ihue + (noise[j][i]>>2),255,noise[i][j]);
+                strip.show();
+            }
+        }
+        /**
+        * / CHALICE BLINKENLIGHTS
+        */
+     #endif
 
 
 

@@ -1,11 +1,13 @@
 #include "Motion.h"
 
 LSM6 imu;
+unsigned long mtimer;
 
-Motion::Motion(bool *_ptilted, float *_movement) {
+Motion::Motion(bool *_ptilted, float *_movement, float *_level) {
     Serial.println("instanced com");
 	ptilted = _ptilted;
 	movement = _movement;
+	level = _level;
 	x = 0;
 	tilted = false;
 	shaking = false;
@@ -18,6 +20,7 @@ void Motion::begin() {
 		while (1);
 	}
 	imu.enableDefault();
+	mtimer = millis();
 }
 
 void Motion::run() {
@@ -37,6 +40,16 @@ void Motion::run() {
 	} else {
 		*movement = constrain(*movement - SHAKE_DECREASE, 0.0, 100.0);
 	}
+
+	if(mtimer + TILT_DELAY < millis()) {
+        mtimer = millis();
+        if(*ptilted == true) {
+            digitalWrite(13, HIGH);
+            *level = constrain(*level - TILT_DECREASE, 0.0, 100.0);
+        } else {
+           digitalWrite(13, LOW);
+        }
+    }
 }
 
 void Motion::watchTilt() {

@@ -10,10 +10,19 @@
  */
 #define NETWORKID   69  // Kappa
 #define KEY         "addamsacrimonium"
-#define NODEID      1    // 1: Flask, 2: Chalice, 3: Necklace
-#define RECEIVER    2   // Flask -> Chalice -> Necklace
 
 #define COMMUNICATION_DELAY  33  // send tilted every X milliseconds
+
+#if DEVICE == FLASK
+    #define NODEID      1    // 1: Flask, 2: Chalice, 3: Necklace
+    #define RECEIVER    2   // Flask -> Chalice -> Necklace
+#elif DEVICE == CHALICE
+    #define NODEID      2    // 1: Flask, 2: Chalice, 3: Necklace
+    #define RECEIVER    3   // Flask -> Chalice -> Necklace
+#elif DEVICE == NECKLACE
+    #define NODEID      3    // 1: Flask, 2: Chalice, 3: Necklace
+    #define RECEIVER    4   // Flask -> Chalice -> Necklace
+#endif
 
 #define FREQUENCY   RF69_433MHZ
 #define ACK_TIME    30

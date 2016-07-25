@@ -48,12 +48,12 @@ void Communication::run() {
 
     if(timer + COMMUNICATION_DELAY < millis()) {
         timer = millis();
-        if(*tilted == true) {
-            digitalWrite(13, HIGH);
-            *level = constrain(*level - 2, 0.0, 100.0);
-        } else {
-           digitalWrite(13, LOW);
-        }
+        // if(*tilted == true) {
+        //     digitalWrite(13, HIGH);
+        //     *level = constrain(*level - 2, 0.0, 100.0);
+        // } else {
+        //    digitalWrite(13, LOW);
+        // }
 
     }
 }

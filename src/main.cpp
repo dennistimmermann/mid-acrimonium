@@ -5,11 +5,14 @@
  * Dennis Timmermann
  */
 
-#define FLASK   0x100
-#define CHALICE 0x101
-#define NECKLACE 0x102
+#define FLASK       0x100
+#define CHALICE     0x101
+#define NECKLACE    0x102
 
-#define DEVICE FLASK     
+/**
+ * SET DEVICE BEFORE FLASHING!
+ */
+#define DEVICE      FLASK
 
 #include "Arduino.h"
 #include "Communication.h"
@@ -22,24 +25,34 @@
  * SETTINGS GO HERTE
  */
 
-#define LED         13  // onboard blinky
+#define LED 13  // onboard blinky
 
-float level = 100.0;
+#if DEVICE == FLASK
+    float level = 100.0;
+#else
+    float level = 0.0;
+#endif
+
 bool tilted = false;
 float movement = 0.0;
 
-Motion motion(&tilted, &movement);
+Motion motion(&tilted, &movement, &level);
 Communication communication(&level, &tilted);
 Lighting lights(&level, &movement);
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin 13 as an output.
-  pinMode(LED, OUTPUT);
-  Serial.begin(115200);
-  communication.begin();
-  lights.begin();
-  motion.begin();
+    // initialize digital pin 13 as an output.
+    pinMode(LED, OUTPUT);
+    Serial.begin(115200);
+
+    communication.begin();
+    lights.begin();
+
+    #if DEVICE == FLASK || DEVICE == CHALICE
+        motion.begin();
+    #endif
+
   // strip.begin();
   // strip.show();
 }
@@ -48,7 +61,10 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-    motion.run();
+
+    #if DEVICE == FLASK || DEVICE == CHALICE
+        motion.run();
+    #endif
     communication.run();
     lights.run();
 
