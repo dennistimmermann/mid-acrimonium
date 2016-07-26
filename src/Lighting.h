@@ -1,6 +1,7 @@
 #ifndef _ACRIMONIUM_LIGHTING_H
 #define _ACRIMONIUM_LIGHTING_H
 
+#include "config.h"
 #include "Arduino.h"
 #include <Adafruit_NeoPixel.h>
 #include <FastLED.h>
@@ -9,11 +10,13 @@
  * SETTINGS
  */
 #define NUM_LEDS 	60
-#define LEDS_X		12
-#define LEDS_Y		5
+#define LEDS_X_F		8
+#define LEDS_Y_F		11
+
+#define LEDS_X_C		8
+#define LEDS_Y_C		5
 
 #define DATA_PIN 	10
-#define BRIGHTNESS 	50
 
 class Lighting {
 	// Adafruit_NeoPixel strip;
@@ -22,8 +25,12 @@ class Lighting {
 public:
 	Lighting(float *_level, float *_movement);
 	void begin();
-	void fillNoise();
+	void fillNoise(int _x, int _y);
 	void run();
+
+	void fill(int to);
+	void swipe();
+	void swoon();
 };
 
 #endif

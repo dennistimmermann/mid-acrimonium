@@ -1,6 +1,7 @@
 #include "Communication.h"
 
 Payload data;
+Payload dataOut;
 RFM69 radio = RFM69(RFM69_CS, RFM69_IRQ, true, RFM69_IRQN);
 unsigned long timer;
 
@@ -47,11 +48,22 @@ void Communication::run() {
     }
 
     if(timer + COMMUNICATION_DELAY < millis()) {
+        Serial.println(NODEID);
         timer = millis();
-        // if(*tilted == true) {
-        //     digitalWrite(13, HIGH);
-        //     *level = constrain(*level - 2, 0.0, 100.0);
-        // } else {
+        if(*tilted == true) {
+            dataOut.nodeId = NODEID;
+            dataOut.volume = 4; //it's hot!
+
+            Serial.print("Sending struct (");
+            Serial.print(sizeof(dataOut));
+            Serial.print(" bytes) ... NodeID: ");
+            Serial.print(NODEID);
+            Serial.print(" - Receiver: ");
+            Serial.print(RECEIVER);
+            radio.send(RECEIVER, (const void*)(&dataOut), sizeof(dataOut));
+            Serial.println();
+        }
+        //  else {
         //    digitalWrite(13, LOW);
         // }
 

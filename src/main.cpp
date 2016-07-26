@@ -5,14 +5,7 @@
  * Dennis Timmermann
  */
 
-#define FLASK       0x100
-#define CHALICE     0x101
-#define NECKLACE    0x102
-
-/**
- * SET DEVICE BEFORE FLASHING!
- */
-#define DEVICE      FLASK
+#include "config.h"
 
 #include "Arduino.h"
 #include "Communication.h"

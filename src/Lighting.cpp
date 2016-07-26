@@ -21,14 +21,46 @@ const int gamma[] = {
   255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LEDS_X * LEDS_Y, 10, NEO_GRBW + NEO_KHZ800);
+const int stripOne[] = {
+    0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+};
+const int stripTwo[] ={
+    58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,
+};
+
+const int stripThree[] = {
+  19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+};
+const int stripFour[] = {
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
+};
+const int stripFive[] = {
+  45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
+};
+const int stripSix[] = {
+  77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89
+};
+
+#if DEVICE == FLASK
+    Adafruit_NeoPixel strip = Adafruit_NeoPixel(LEDS_X_F * LEDS_Y_F, 10, NEO_GRBW + NEO_KHZ800);
+#elif DEVICE == CHALICE
+    Adafruit_NeoPixel strip = Adafruit_NeoPixel(LEDS_X_C * LEDS_Y_C, 10, NEO_GRBW + NEO_KHZ800);
+#else
+    Adafruit_NeoPixel strip = Adafruit_NeoPixel(90, 10, NEO_GRBW + NEO_KHZ800);
+#endif
 uint16_t speed = 48;
 
 uint16_t x;
 uint16_t y;
 uint16_t z;
 
-uint8_t noise[LEDS_X][LEDS_Y];
+#if DEVICE == FLASK
+    uint8_t noise[LEDS_X_F][LEDS_Y_F];
+#else
+    uint8_t noise[LEDS_X_C][LEDS_Y_C];
+#endif
+
+bool animationRan = false;
 
 Lighting::Lighting(float *_level, float *_movement) {
     level = _level;
@@ -46,10 +78,10 @@ void Lighting::begin() {
     z = 0;
 }
 
-void Lighting::fillNoise() {
-    for (size_t i = 0; i < LEDS_X; i++) {
+void Lighting::fillNoise(int _x, int _y) {
+    for (size_t i = 0; i < _x; i++) {
         int xoffset = 100 * i;
-        for (size_t j = 0; j < LEDS_Y; j++) {
+        for (size_t j = 0; j < _y; j++) {
             int yoffset = 100 * j;
             noise[i][j] = inoise8(x + xoffset, y + yoffset, z);
         }
@@ -63,15 +95,15 @@ void Lighting::run() {
         // /**
         //  * ! FLASK BLINKENLIGHTS
         //  */
-        fillNoise();
-        int _lvl = (LEDS_X * LEDS_Y) * (*level/100.0);
+        fillNoise(LEDS_X_F, LEDS_Y_F);
+        int _lvl = (LEDS_X_F * LEDS_Y_F) * (*level/100.0);
         float brightness = ((*movement+10)/100.0);
         brightness = brightness * (*level/100.0);
-        for(int i = 0; i < LEDS_X; i++) {
-            for(int j = 0; j < LEDS_Y; j++) {
+        for(int i = 0; i < LEDS_X_F; i++) {
+            for(int j = 0; j < LEDS_Y_F; j++) {
 
-                int c = j*12+i;
-                float brightness2 = constrain((_lvl - c) / 12.0, 0.0, 1.0);
+                int c = j*(LEDS_X_F -1)+i;
+                float brightness2 = constrain((_lvl - c) / (float)(LEDS_X_F -1), 0.0, 1.0);
 
                 strip.setPixelColor(c, strip.Color(
                     0,
@@ -91,13 +123,13 @@ void Lighting::run() {
         /**
         * ! CHALICE BLINKENLIGHTS
         */
-        fillNoise();
-        int _lvl = (LEDS_X * LEDS_Y) * (*level/100.0);
-        for(int i = 0; i < LEDS_X; i++) {
-            for(int j = 0; j < LEDS_Y; j++) {
+        fillNoise(LEDS_X_C, LEDS_Y_C);
+        int _lvl = (LEDS_X_C * LEDS_Y_C) * (*level/100.0);
+        for(int i = 0; i < LEDS_X_C; i++) {
+            for(int j = 0; j < LEDS_Y_C; j++) {
 
-                int c = j*12+i;
-                float brightness = constrain((_lvl - c) / 12.0, 0.0, 1.0);
+                int c = j*(LEDS_X_C -1)+i;
+                float brightness = constrain((_lvl - c) / (float)(LEDS_X_C -1), 0.0, 1.0);
                 strip.setPixelColor(c, strip.Color(
                     0,
                     (int) ( (20+gamma[noise[i][j]]) * brightness),
@@ -112,6 +144,18 @@ void Lighting::run() {
         /**
         * / CHALICE BLINKENLIGHTS
         */
+     #elif DEVICE == NECKLACE
+        if(animationRan == false && *level > 10.0) {
+            animationRan == true;
+            swipe();
+            fill(4);
+            swipe();
+            fill(8);
+            swipe();
+            fill(12);
+            swoon();
+        }
+
      #endif
 
 
@@ -150,4 +194,45 @@ void Lighting::run() {
     //     strip.show(); // This sends the updated pixel color to the hardware.
     //     delay(5); // Delay for a period of time (in milliseconds).
     // }
+}
+
+void Lighting::fill(int to) {
+  for(int i = 0; i < to; i++) {
+      strip.setPixelColor(stripThree[i], strip.Color(128,255,0, 64 ) );
+      strip.setPixelColor(stripFour[i], strip.Color(128,255,0, 64 ) );
+      strip.setPixelColor(stripFive[i], strip.Color(128,255,0, 64 ) );
+      strip.setPixelColor(stripSix[i], strip.Color(128,255,0, 64 ) );
+      strip.show();
+      delay(10);
+    }
+}
+
+void Lighting::swipe() {
+    for(int i = 0; i < 19; i++) {
+      strip.setPixelColor(stripOne[i], strip.Color(128,255,0, 64 ) );
+      strip.setPixelColor(stripTwo[i], strip.Color(128,255,0, 64 ) );
+      strip.show();
+      delay(20);
+    }
+    for(int i = 0; i < 19; i++) {
+      strip.setPixelColor(stripOne[i], strip.Color(0,0,0, 0 ) );
+      strip.setPixelColor(stripTwo[i], strip.Color(0,0,0, 0 ) );
+      strip.show();
+      delay(20);
+    }
+}
+
+void Lighting::swoon() {
+    for(int j = 255; j >= 0; j--) {
+        for(int i = 0; i < 13; i++) {
+            strip.setPixelColor(stripThree[i], strip.Color((int)j/2,j,0, (int)j/4 ) );
+            strip.setPixelColor(stripFour[i], strip.Color((int)j/2,j,0, (int)j/4 ) );
+            strip.setPixelColor(stripFive[i], strip.Color((int)j/2,j,0, (int)j/4 ) );
+            strip.setPixelColor(stripSix[i], strip.Color((int)j/2,j,0, (int)j/4 ) );
+        }
+        strip.show();
+        delay(10);
+    }
+    cli();
+    while( true ); //An empty loop.
 }

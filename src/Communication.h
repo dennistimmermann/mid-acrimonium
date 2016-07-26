@@ -1,17 +1,10 @@
 #ifndef _ACRIMONIUM_COMMUNICATION_H
 #define _ACRIMONIUM_COMMUNICATION_H
 
+#include "config.h"
 #include "Arduino.h"
 #include <SPI.h>
 #include <RFM69.h>    //get it here: https://www.github.com/lowpowerlab/rfm69
-
-/*
- * SETTINGS
- */
-#define NETWORKID   69  // Kappa
-#define KEY         "addamsacrimonium"
-
-#define COMMUNICATION_DELAY  33  // send tilted every X milliseconds
 
 #if DEVICE == FLASK
     #define NODEID      1    // 1: Flask, 2: Chalice, 3: Necklace
